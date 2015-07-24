@@ -10,11 +10,11 @@ import (
 	"strconv"
 	"time"
 
-	"code.google.com/p/plotinum/plot"
-	"code.google.com/p/plotinum/plotter"
-	"code.google.com/p/plotinum/plotutil"
-	"code.google.com/p/plotinum/vg/vgimg"
 	"github.com/gogo/protobuf/proto"
+	"github.com/gonum/plot"
+	"github.com/gonum/plot/plotter"
+	"github.com/gonum/plot/plotutil"
+	vgdraw "github.com/gonum/plot/vg/draw"
 )
 
 var linesColors = `blue,green,red,purple,brown,yellow,aqua,grey,magenta,pink,gold,rose`
@@ -57,7 +57,7 @@ func marshalPNG(r *http.Request, results []*metricData) []byte {
 
 	// need different timeMarker's based on step size
 	p.Title.Text = r.FormValue("title")
-	p.X.Tick.Marker = makeTimeMarker(results[0].GetStepTime())
+	p.X.Tick.Marker = NewTimeMarker(results[0].GetStepTime())
 
 	hideLegend := getBool(r.FormValue("hideLegend"), false)
 
@@ -105,8 +105,8 @@ func marshalPNG(r *http.Request, results []*metricData) []byte {
 
 	// Draw the plot to an in-memory image.
 	img := image.NewRGBA(image.Rect(0, 0, width, height))
-	da := plot.MakeDrawArea(vgimg.NewImage(img))
-	p.Draw(da)
+	canvas := vgdraw.Canvas(img)
+	p.Draw(canvas)
 
 	var b bytes.Buffer
 	if err := png.Encode(&b, img); err != nil {
@@ -116,8 +116,11 @@ func marshalPNG(r *http.Request, results []*metricData) []byte {
 	return b.Bytes()
 }
 
-func makeTimeMarker(step int32) func(min, max float64) []plot.Tick {
+type TimeMarker struct {
+	format string
+}
 
+func NewTimeMarker(step int32) TimeMarker {
 	var format string
 
 	// heuristic yoinked from graphite, more or less
@@ -136,19 +139,27 @@ func makeTimeMarker(step int32) func(min, max float64) []plot.Tick {
 		format = "01/02 2006"
 	}
 
-	return func(min, max float64) []plot.Tick {
-		ticks := plot.DefaultTicks(min, max)
+	return TimeMarker{format}
+}
 
-		for i, t := range ticks {
-			if !t.IsMinor() {
-				t0 := time.Unix(int64(t.Value), 0)
-				ticks[i].Label = t0.Format(format)
-			}
-		}
-
-		return ticks
-
+func (tm TimeMarker) Ticks(min, max float64) []plot.Tick {
+	ticks := []plot.Tick{
+		plot.Tick{
+			Value: min,
+		},
+		plot.Tick{
+			Value: max,
+		},
 	}
+
+	for i, t := range ticks {
+		if !t.IsMinor() {
+			t0 := time.Unix(int64(t.Value), 0)
+			ticks[i].Label = t0.Format(tm.format)
+		}
+	}
+
+	return ticks
 }
 
 func getBool(s string, def bool) bool {
@@ -316,7 +327,7 @@ func hexToColor(h string) color.Color {
 
 type ResponsePlotter struct {
 	Response *metricData
-	plot.LineStyle
+	vgdraw.LineStyle
 	lineMode string
 }
 
@@ -328,15 +339,15 @@ func NewResponsePlotter(r *metricData) *ResponsePlotter {
 }
 
 // Plot draws the Line, implementing the plot.Plotter interface.
-func (rp *ResponsePlotter) Plot(da plot.DrawArea, plt *plot.Plot) {
-	trX, trY := plt.Transforms(&da)
+func (rp *ResponsePlotter) Plot(canvas vgdraw.Canvas, plt *plot.Plot) {
+	trX, trY := plt.Transforms(&canvas)
 
 	start := float64(rp.Response.GetStartTime())
 	step := float64(rp.Response.GetStepTime())
 	absent := rp.Response.IsAbsent
 
-	lines := make([][]plot.Point, 1)
-	lines[0] = make([]plot.Point, 0, len(rp.Response.Values))
+	lines := make([][]vgdraw.Point, 1)
+	lines[0] = make([]vgdraw.Point, 0, len(rp.Response.Values))
 
 	/* ikruglov
 	 * swithing between lineMode and looping inside
@@ -350,11 +361,11 @@ func (rp *ResponsePlotter) Plot(da plot.DrawArea, plt *plot.Plot) {
 				lastAbsent = true
 			} else if lastAbsent {
 				currentLine++
-				lines = append(lines, make([]plot.Point, 1))
-				lines[currentLine][0] = plot.Point{X: trX(start + float64(i)*step), Y: trY(v)}
+				lines = append(lines, make([]vgdraw.Point, 1))
+				lines[currentLine][0] = vgdraw.Point{X: trX(start + float64(i)*step), Y: trY(v)}
 				lastAbsent = false
 			} else {
-				lines[currentLine] = append(lines[currentLine], plot.Point{X: trX(start + float64(i)*step), Y: trY(v)})
+				lines[currentLine] = append(lines[currentLine], vgdraw.Point{X: trX(start + float64(i)*step), Y: trY(v)})
 			}
 		}
 
@@ -364,15 +375,15 @@ func (rp *ResponsePlotter) Plot(da plot.DrawArea, plt *plot.Plot) {
 				continue
 			}
 
-			lines[0] = append(lines[0], plot.Point{X: trX(start + float64(i)*step), Y: trY(v)})
+			lines[0] = append(lines[0], vgdraw.Point{X: trX(start + float64(i)*step), Y: trY(v)})
 		}
 
 	case "drawAsInfinite":
 		for i, v := range rp.Response.Values {
 			if !absent[i] && v > 0 {
-				infiniteLine := []plot.Point{
-					plot.Point{X: trX(start + float64(i)*step), Y: da.Y(1)},
-					plot.Point{X: trX(start + float64(i)*step), Y: da.Y(0)},
+				infiniteLine := []vgdraw.Point{
+					vgdraw.Point{X: trX(start + float64(i)*step), Y: canvas.Y(1)},
+					vgdraw.Point{X: trX(start + float64(i)*step), Y: canvas.Y(0)},
 				}
 				lines = append(lines, infiniteLine)
 			}
@@ -383,12 +394,12 @@ func (rp *ResponsePlotter) Plot(da plot.DrawArea, plt *plot.Plot) {
 		panic("Unimplemented " + rp.lineMode)
 	}
 
-	da.StrokeLines(rp.LineStyle, lines...)
+	canvas.StrokeLines(rp.LineStyle, lines...)
 }
 
-func (rp *ResponsePlotter) Thumbnail(da *plot.DrawArea) {
+func (rp *ResponsePlotter) Thumbnail(canvas *vgdraw.Canvas) {
 	l := plotter.Line{LineStyle: rp.LineStyle}
-	l.Thumbnail(da)
+	l.Thumbnail(canvas)
 }
 
 func (rp *ResponsePlotter) DataRange() (xmin, xmax, ymin, ymax float64) {
