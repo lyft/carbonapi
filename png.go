@@ -2,9 +2,7 @@ package main
 
 import (
 	"bytes"
-	"image"
 	"image/color"
-	"image/png"
 	"math"
 	"net/http"
 	"strconv"
@@ -14,6 +12,7 @@ import (
 	"github.com/gonum/plot"
 	"github.com/gonum/plot/plotter"
 	"github.com/gonum/plot/plotutil"
+	"github.com/gonum/plot/vg"
 	vgdraw "github.com/gonum/plot/vg/draw"
 )
 
@@ -52,8 +51,8 @@ func marshalPNG(r *http.Request, results []*metricData) []byte {
 	lineMode := getString(r.FormValue("lineMode"), "slope")
 
 	// width and height
-	width := getInt(r.FormValue("width"), 330)
-	height := getInt(r.FormValue("height"), 250)
+	width := getFloat64(r.FormValue("width"), 330)
+	height := getFloat64(r.FormValue("height"), 250)
 
 	// need different timeMarker's based on step size
 	p.Title.Text = r.FormValue("title")
@@ -103,17 +102,13 @@ func marshalPNG(r *http.Request, results []*metricData) []byte {
 	p.Y.Max *= 1.05
 	p.Y.Min *= 0.95
 
-	// Draw the plot to an in-memory image.
-	img := image.NewRGBA(image.Rect(0, 0, width, height))
-	canvas := vgdraw.Canvas(img)
-	p.Draw(canvas)
-
-	var b bytes.Buffer
-	if err := png.Encode(&b, img); err != nil {
+	writerTo, err := p.WriterTo(vg.Points(width), vg.Points(height), "png")
+	var buffer bytes.Buffer
+	if _, err := writerTo.WriteTo(&buffer); err != nil {
 		panic(err)
 	}
 
-	return b.Bytes()
+	return buffer.Bytes()
 }
 
 type TimeMarker struct {
@@ -185,17 +180,17 @@ func getString(s string, def string) string {
 	return s
 }
 
-func getInt(s string, def int) int {
+func getFloat64(s string, def float64) float64 {
 	if s == "" {
 		return def
 	}
 
-	n, err := strconv.Atoi(s)
+	n, err := strconv.ParseFloat(s, 64)
 	if err != nil {
 		return def
 	}
 
-	return n
+	return float64(n)
 }
 
 var colors = map[string]color.RGBA{
@@ -427,12 +422,12 @@ func (rp *ResponsePlotter) DataRange() (xmin, xmax, ymin, ymax float64) {
 	return
 }
 
-func (rp *ResponsePlotter) maybeConsolidateData(numberOfPixels int) {
+func (rp *ResponsePlotter) maybeConsolidateData(numberOfPixels float64) {
 	// idealy numberOfPixels should be size in pixels of char ares,
 	// not char areay with Y axis and its label
 
 	numberOfDataPoints := len(rp.Response.Values)
-	pointsPerPixel := int(math.Ceil(float64(numberOfDataPoints) / float64(numberOfPixels)))
+	pointsPerPixel := int(math.Ceil(float64(numberOfDataPoints) / numberOfPixels))
 
 	if pointsPerPixel <= 1 {
 		return
