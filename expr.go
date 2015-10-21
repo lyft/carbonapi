@@ -801,10 +801,10 @@ func evalExpr(e *expr, from, until int32, values map[metricRequest][]*metricData
 			r.drawAsInfinite = true
 			r.secondYAxis = true
 
+			single_failures := make([]float64, len(r.Values))
 			for i, v := range a.Values {
 				if a.IsAbsent[i] {
-					r.Values[i] = 0
-					r.IsAbsent[i] = true
+					single_failures[i] = 0
 					continue
 				}
 
@@ -813,6 +813,26 @@ func evalExpr(e *expr, from, until int32, values map[metricRequest][]*metricData
 				stdevsAway := math.Abs((v - average) / stdev)
 
 				if stdevsAway < acceptableStdevs {
+					single_failures[i] = 0
+				} else {
+					single_failures[i] = 1
+				}
+			}
+
+			// Look forward and backward to see if failure windows are met
+			for i := range single_failures {
+				failures := 0
+
+				for check_index := i - windows + 1; check_index < i+windows; check_index++ {
+					if check_index < 0 || check_index >= len(single_failures) {
+						continue
+					}
+					if single_failures[check_index] == 1 {
+						failures++
+					}
+				}
+
+				if failures < windows {
 					r.Values[i] = 0
 				} else {
 					r.Values[i] = 1
