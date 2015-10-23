@@ -801,10 +801,10 @@ func evalExpr(e *expr, from, until int32, values map[metricRequest][]*metricData
 			r.drawAsInfinite = true
 			r.secondYAxis = true
 
-			single_failures := make([]int, len(r.Values))
+			singleFailures := make([]int, len(r.Values))
 			for i, v := range a.Values {
 				if a.IsAbsent[i] {
-					single_failures[i] = 0
+					singleFailures[i] = 0
 					continue
 				}
 
@@ -816,16 +816,16 @@ func evalExpr(e *expr, from, until int32, values map[metricRequest][]*metricData
 				}
 
 				if stdevsAway < acceptableStdevs {
-					single_failures[i] = 0
+					singleFailures[i] = 0
 				} else {
-					single_failures[i] = 1
+					singleFailures[i] = 1
 				}
 			}
 
-			left_failures := make([]int, len(r.Values))
+			leftFailures := make([]int, len(r.Values))
 			failures := 0
-			for i, v := range single_failures {
-				left_failures[i] = failures
+			for i, v := range singleFailures {
+				leftFailures[i] = failures
 				if v == 1 {
 					failures++
 				} else {
@@ -833,29 +833,29 @@ func evalExpr(e *expr, from, until int32, values map[metricRequest][]*metricData
 				}
 			}
 
-			right_failures := make([]int, len(r.Values))
+			rightFailures := make([]int, len(r.Values))
 			failures = 0
-			for i := range single_failures {
-				reverseI := len(single_failures) - i - 1
-				right_failures[reverseI] = failures
-				if single_failures[reverseI] == 1 {
+			for i := range singleFailures {
+				reverseI := len(singleFailures) - i - 1
+				rightFailures[reverseI] = failures
+				if singleFailures[reverseI] == 1 {
 					failures++
 				} else {
 					failures = 0
 				}
 			}
 
-			for i, v := range single_failures {
+			for i, v := range singleFailures {
 				if v == 0 {
 					continue
 				}
 
 				failures := 1
 				if i-1 >= 0 {
-					failures += left_failures[i-1]
+					failures += leftFailures[i-1]
 				}
-				if i+1 < len(single_failures) {
-					failures += right_failures[i+1]
+				if i+1 < len(singleFailures) {
+					failures += rightFailures[i+1]
 				}
 
 				if failures < windows {
