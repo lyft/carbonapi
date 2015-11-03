@@ -1450,7 +1450,7 @@ func TestEvalExpression(t *testing.T) {
 				},
 			},
 			[]float64{math.NaN(), 1, 2, math.NaN(), math.NaN()},
-			"metricA",
+			"removeBelowValue(metricA)",
 		},
 	}
 

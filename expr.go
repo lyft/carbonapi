@@ -1994,26 +1994,23 @@ func evalExpr(e *expr, from, until int32, values map[metricRequest][]*metricData
 		})
 
 	case "removeBelowValue":
-		args, err := getSeriesArg(e.args[0], from, until, values)
-		if err != nil {
-			return nil
-		}
 		threshold, err := getFloatArg(e, 1)
 		if err != nil {
 			return nil
 		}
 
-		var results []*metricData
-		for _, metric := range args {
-			for i, value := range metric.Values {
-				if value < threshold {
-					metric.Values[i] = math.NaN()
-					metric.IsAbsent[i] = true
+		return forEachSeriesDo(e, from, until, values, func(a *metricData, r *metricData) *metricData {
+			for i := range a.Values {
+				if a.Values[i] < threshold {
+					r.Values[i] = math.NaN()
+					r.IsAbsent[i] = true
+				} else {
+					r.Values[i] = a.Values[i]
+					r.IsAbsent[i] = a.IsAbsent[i]
 				}
-				results = append(results, metric)
 			}
-		}
-		return results
+			return r
+		})
 
 	case "summarize": // summarize(seriesList, intervalString, func='sum', alignToFrom=False)
 		// TODO(dgryski): make sure the arrays are all the same 'size'
