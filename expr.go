@@ -1993,6 +1993,25 @@ func evalExpr(e *expr, from, until int32, values map[metricRequest][]*metricData
 			return percentile(values, percent, interpolate)
 		})
 
+	case "removeBelowValue":
+		threshold, err := getFloatArg(e, 1)
+		if err != nil {
+			return nil
+		}
+
+		return forEachSeriesDo(e, from, until, values, func(a *metricData, r *metricData) *metricData {
+			for i := range a.Values {
+				if a.Values[i] < threshold {
+					r.Values[i] = math.NaN()
+					r.IsAbsent[i] = true
+				} else {
+					r.Values[i] = a.Values[i]
+					r.IsAbsent[i] = a.IsAbsent[i]
+				}
+			}
+			return r
+		})
+
 	case "summarize": // summarize(seriesList, intervalString, func='sum', alignToFrom=False)
 		// TODO(dgryski): make sure the arrays are all the same 'size'
 		args, err := getSeriesArg(e.args[0], from, until, values)
