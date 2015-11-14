@@ -527,7 +527,7 @@ func main() {
 
 	flag.Parse()
 
-	if logtostdout {
+	if *logtostdout {
 		log.SetOutput(os.Stdout)
 	} else {
 		mlog.SetOutput(*logdir, "carbonapi", *logtostdout)
