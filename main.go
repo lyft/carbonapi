@@ -6,6 +6,7 @@ import (
 	"expvar"
 	"flag"
 	"fmt"
+	"log"
 	"net/http"
 	"net/http/httputil"
 	_ "net/http/pprof"
@@ -522,11 +523,15 @@ func main() {
 	tz := flag.String("tz", "", "timezone,offset to use for dates with no timezone")
 	graphiteHost := flag.String("graphite", "", "graphite destination host")
 	logdir := flag.String("logdir", "/var/log/carbonapi/", "logging directory")
-	logtostdout := flag.Bool("stdout", false, "log also to stdout")
+	logtostdout := flag.Bool("stdout", false, "log to stdout only")
 
 	flag.Parse()
 
-	mlog.SetOutput(*logdir, "carbonapi", *logtostdout)
+	if logtostdout {
+		log.SetOutput(os.Stdout)
+	} else {
+		mlog.SetOutput(*logdir, "carbonapi", *logtostdout)
+	}
 
 	expvar.NewString("BuildVersion").Set(BuildVersion)
 	logger.Logln("starting carbonapi", BuildVersion)
