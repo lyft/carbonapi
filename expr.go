@@ -1087,26 +1087,23 @@ func evalExpr(e *expr, from, until int32, values map[metricRequest][]*metricData
 		return []*metricData{&r}
 
 	case "ensure": // ensure(seriesList)
-		arg, err := getSeriesArg(e.args[0], from, until, values)
-		if err != nil {
-			return nil
-		}
-
+		arg, _ := getSeriesArg(e.args[0], from, until, values)
 		var results []*metricData
 		// We have no results
 		if len(arg) == 0 {
-			for req, _ := range values {
-				newvalues := make([]float64, (req.until - req.from) / 60)
-				absent := make([]bool, (req.until - req.from) / 60)
-				results = append(results, &metricData{FetchResponse: pb.FetchResponse{
-					Name:      proto.String(req.metric),
-					Values:    newvalues,
-					StartTime: proto.Int32(req.from),
-					StepTime:  proto.Int32(60),
-					StopTime:  proto.Int32(req.until),
-					IsAbsent:  absent,
-				}})
+			newvalues := make([]float64, ((until - from) / 60) + 1)
+			absent := make([]bool, ((until - from) / 60) + 1)
+			for i := 0; i < len(absent); i++ {
+				absent[i] = true
 			}
+			results = append(results, &metricData{FetchResponse: pb.FetchResponse{
+				Name:      proto.String("unknown"),
+				Values:    newvalues,
+				StartTime: proto.Int32(from),
+				StepTime:  proto.Int32(60),
+				StopTime:  proto.Int32(until),
+				IsAbsent:  absent,
+			}})
 		} else {
 			results = arg
 		}
