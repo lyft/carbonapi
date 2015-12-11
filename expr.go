@@ -960,6 +960,25 @@ func evalExpr(e *expr, from, until int32, values map[metricRequest][]*metricData
 		}
 		return results
 
+	case "failureThreshold": // failureThreshold(seriesList, threshold)
+		args, err := getSeriesArg(e.args[0], from, until, values)
+		if err != nil {
+			return nil
+		}
+
+		threshold, err := getIntArg(e, 1)
+		if err != nil {
+			return nil
+		}
+
+		var results []*metricData
+		for _, a: = range args {
+			r := *a
+			r.Name = proto.String(fmt.Sprint("%s threshold:%d", a.GetName(), threshold))
+			results = append(results, &r)
+		}
+		return results
+
 	case "derivative": // derivative(seriesList)
 		return forEachSeriesDo(e, from, until, values, func(a *metricData, r *metricData) *metricData {
 			prev := a.Values[0]
