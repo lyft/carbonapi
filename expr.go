@@ -257,6 +257,7 @@ var (
 	ErrBadType           = errors.New("bad type")
 	ErrMissingArgument   = errors.New("missing argument")
 	ErrMissingTimeseries = errors.New("missing time series")
+	ErrInvalidArguments = errors.New("invalid arguments")
 )
 
 func getStringArg(e *expr, n int) (string, error) {
@@ -960,21 +961,31 @@ func evalExpr(e *expr, from, until int32, values map[metricRequest][]*metricData
 		}
 		return results
 
-	case "failureThreshold": // failureThreshold(seriesList, threshold)
+	case "threshold": // threshold(seriesList, failure_threshold, max_data_points)
 		args, err := getSeriesArg(e.args[0], from, until, values)
 		if err != nil {
 			return nil
 		}
 
-		threshold, err := getIntArg(e, 1)
+		failure_threshold, err := getIntArg(e, 1)
 		if err != nil {
+			return nil
+		}
+
+		max_data_points, err := getIntArg(e, 2)
+		if err != nil {
+			return nil
+		}
+
+		if failure_threshold > max_data_points {
+			logger.Logf("threshold must be lesser than max data points: %d > %d\n", failure_threshold, max_data_points)
 			return nil
 		}
 
 		var results []*metricData
 		for _, a := range args {
 			r := *a
-			r.Name = proto.String(fmt.Sprintf("%s threshold:%d", a.GetName(), threshold))
+			r.Name = proto.String(fmt.Sprintf("%s threshold:%d maxDataPoints: %d", a.GetName(), failure_threshold, max_data_points))
 			results = append(results, &r)
 		}
 		return results
