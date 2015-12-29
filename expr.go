@@ -257,7 +257,6 @@ var (
 	ErrBadType           = errors.New("bad type")
 	ErrMissingArgument   = errors.New("missing argument")
 	ErrMissingTimeseries = errors.New("missing time series")
-	ErrInvalidArguments = errors.New("invalid arguments")
 )
 
 func getStringArg(e *expr, n int) (string, error) {
