@@ -960,7 +960,7 @@ func evalExpr(e *expr, from, until int32, values map[metricRequest][]*metricData
 		}
 		return results
 
-	case "threshold": // threshold(seriesList, failure_threshold, max_data_points)
+	case "failureThreshold": // failureThreshold(seriesList, num_failures, max_data_points)
 		args, err := getSeriesArg(e.args[0], from, until, values)
 		if err != nil {
 			return nil
@@ -984,7 +984,7 @@ func evalExpr(e *expr, from, until int32, values map[metricRequest][]*metricData
 		var results []*metricData
 		for _, a := range args {
 			r := *a
-			r.Name = proto.String(fmt.Sprintf("%s threshold:%d maxDataPoints: %d", a.GetName(), failure_threshold, max_data_points))
+			r.Name = proto.String(fmt.Sprintf("%s numFailures: %d maxDataPoints: %d", a.GetName(), failure_threshold, max_data_points))
 			results = append(results, &r)
 		}
 		return results
