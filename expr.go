@@ -984,7 +984,7 @@ func evalExpr(e *expr, from, until int32, values map[metricRequest][]*metricData
 		var results []*metricData
 		for _, a := range args {
 			r := *a
-			r.Name = proto.String(fmt.Sprintf("%s threshold: %d maxDataPoints: %d", a.GetName(), failure_threshold, max_data_points))
+			r.Name = proto.String(fmt.Sprintf("%s threshold: %d of %d", a.GetName(), failure_threshold, max_data_points))
 			results = append(results, &r)
 		}
 		return results
