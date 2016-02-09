@@ -1514,6 +1514,19 @@ func TestEvalExpression(t *testing.T) {
 		},
 		{
 			&expr{
+				target: "timeFunction",
+				etype:  etFunc,
+				args: []*expr{
+					&expr{valStr: "footime", etype: etString},
+				},
+				argString: "footime",
+			},
+			map[metricRequest][]*metricData{},
+			[]float64{4200.0, 4260.0, 4320.0},
+			"footime",
+		},
+		{
+			&expr{
 				target: "squareRoot",
 				etype:  etFunc,
 				args: []*expr{
@@ -1562,7 +1575,14 @@ func TestEvalExpression(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		g := evalExpr(tt.e, 0, 1, tt.m)
+		var from int32 = 0
+		var until int32 = 1
+		if tt.e.target == "timeFunction" {
+			from = 4200
+			until = 4350
+		}
+
+		g := evalExpr(tt.e, from, until, tt.m)
 		if g == nil {
 			t.Errorf("failed to eval %v", tt.name)
 			continue
