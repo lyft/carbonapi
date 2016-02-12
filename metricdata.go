@@ -2,21 +2,31 @@ package main
 
 import (
 	"bytes"
-	pb "github.com/dgryski/carbonzipper/carbonzipperpb"
-	pickle "github.com/kisielk/og-rek"
 	"math"
 	"strconv"
 	"time"
+
+	pb "github.com/dgryski/carbonzipper/carbonzipperpb"
+	pickle "github.com/kisielk/og-rek"
 )
 
 type metricData struct {
 	pb.FetchResponse
 
 	// extra options
+	xStep          float64
+	valuesPerPoint int
+	color          string
+	alpha          float64
+	lineWidth      float64
+
 	drawAsInfinite bool
 	secondYAxis    bool
 	dashed         bool // TODO (ikruglov) smth like lineType would be better
-	color          string
+	hasAlpha       bool
+	stacked        bool
+
+	aggregatedValues []float64
 }
 
 func marshalCSV(results []*metricData) []byte {
@@ -28,16 +38,16 @@ func marshalCSV(results []*metricData) []byte {
 		step := r.GetStepTime()
 		t := r.GetStartTime()
 		for i, v := range r.Values {
+			b = append(b, '"')
+			b = append(b, r.GetName()...)
+			b = append(b, '"')
+			b = append(b, ',')
+			b = append(b, time.Unix(int64(t), 0).Format("2006-01-02 15:04:05")...)
+			b = append(b, ',')
 			if !r.IsAbsent[i] {
-				b = append(b, '"')
-				b = append(b, r.GetName()...)
-				b = append(b, '"')
-				b = append(b, ',')
-				b = append(b, time.Unix(int64(t), 0).Format("2006-01-02 15:04:05")...)
-				b = append(b, ',')
 				b = strconv.AppendFloat(b, v, 'f', -1, 64)
-				b = append(b, '\n')
 			}
+			b = append(b, '\n')
 			t += step
 		}
 	}

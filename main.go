@@ -19,6 +19,7 @@ import (
 
 	pb "github.com/dgryski/carbonzipper/carbonzipperpb"
 	"github.com/dgryski/carbonzipper/mlog"
+	"github.com/dgryski/carbonzipper/mstats"
 
 	"github.com/bradfitz/gomemcache/memcache"
 	ecache "github.com/dgryski/go-expirecache"
@@ -524,6 +525,7 @@ func main() {
 	graphiteHost := flag.String("graphite", "", "graphite destination host")
 	logdir := flag.String("logdir", "/var/log/carbonapi/", "logging directory")
 	logtostdout := flag.Bool("stdout", false, "log to stdout only")
+	interval := flag.Duration("i", 60*time.Second, "interval to report internal statistics to graphite")
 
 	flag.Parse()
 
@@ -629,8 +631,10 @@ func main() {
 
 		logger.Logln("Using graphite host", host)
 
+		logger.Logln("setting stats interval to", *interval)
+
 		// register our metrics with graphite
-		graphite, err := g2g.NewGraphite(host, 60*time.Second, 10*time.Second)
+		graphite, err := g2g.NewGraphite(host, *interval, 10*time.Second)
 		if err != nil {
 			logger.Fatalln("unable to connect to to graphite: ", host, ":", err)
 		}
@@ -652,6 +656,14 @@ func main() {
 			graphite.Register(fmt.Sprintf("carbon.api.%s.cache_size", hostname), Metrics.CacheSize)
 			graphite.Register(fmt.Sprintf("carbon.api.%s.cache_items", hostname), Metrics.CacheItems)
 		}
+
+		go mstats.Start(*interval)
+
+		graphite.Register(fmt.Sprintf("carbon.api.%s.alloc", hostname), &mstats.Alloc)
+		graphite.Register(fmt.Sprintf("carbon.api.%s.total_alloc", hostname), &mstats.TotalAlloc)
+		graphite.Register(fmt.Sprintf("carbon.api.%s.num_gc", hostname), &mstats.NumGC)
+		graphite.Register(fmt.Sprintf("carbon.api.%s.pause_ns", hostname), &mstats.PauseNS)
+
 	}
 
 	render := func(w http.ResponseWriter, r *http.Request) {
