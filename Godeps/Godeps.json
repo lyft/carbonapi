@@ -1,0 +1,197 @@
+{
+	"ImportPath": "github.com/lyft/carbonapi",
+	"GoVersion": "go1.6",
+	"GodepVersion": "v62",
+	"Deps": [
+		{
+			"ImportPath": "bitbucket.org/tebeka/strftime",
+			"Comment": "0.1.2-4",
+			"Rev": "'2194253a23c090a4d5953b152a3c63fb5da4f5a4'"
+		},
+		{
+			"ImportPath": "bitbucket.org/zombiezen/gopdf/pdf",
+			"Comment": "go.weekly.2012-02-22-18",
+			"Rev": "'1c63dc69751bc45441c2ce1f56b631c55294b4d5'"
+		},
+		{
+			"ImportPath": "github.com/JaderDias/movingmedian",
+			"Rev": "95dc1d1e9d582ba8548e8460a7ae21193be75483"
+		},
+		{
+			"ImportPath": "github.com/aclements/go-moremath/mathx",
+			"Rev": "027ed7fe13760715f21ba8fe1c35c1dad9c1a1f7"
+		},
+		{
+			"ImportPath": "github.com/ajstarks/svgo",
+			"Comment": "go.weekly.2012-01-27-130-g672fe54",
+			"Rev": "672fe547df4e49efc6db67a74391368bcb149b37"
+		},
+		{
+			"ImportPath": "github.com/bradfitz/gomemcache/memcache",
+			"Comment": "release.r60-41-gfb1f79c",
+			"Rev": "fb1f79c6b65acda83063cbc69f6bba1522558bfc"
+		},
+		{
+			"ImportPath": "github.com/datastream/holtwinters",
+			"Rev": "964e2c9d914c37e8731d207bd342c29f907d005c"
+		},
+		{
+			"ImportPath": "github.com/davecgh/go-spew/spew",
+			"Rev": "5215b55f46b2b919f50a1df0eaa5886afe4e3b3d"
+		},
+		{
+			"ImportPath": "github.com/dgryski/carbonzipper/carbonzipperpb",
+			"Comment": "0.29-40-g462ed6c",
+			"Rev": "462ed6c63dac9e90759f879f510ec59a7cc42e8e"
+		},
+		{
+			"ImportPath": "github.com/dgryski/carbonzipper/mlog",
+			"Comment": "0.29-40-g462ed6c",
+			"Rev": "462ed6c63dac9e90759f879f510ec59a7cc42e8e"
+		},
+		{
+			"ImportPath": "github.com/dgryski/carbonzipper/mstats",
+			"Comment": "0.29-40-g462ed6c",
+			"Rev": "462ed6c63dac9e90759f879f510ec59a7cc42e8e"
+		},
+		{
+			"ImportPath": "github.com/dgryski/go-expirecache",
+			"Rev": "310e3fa1f3caab1e6b9f8b354ce67fa10bfef2bd"
+		},
+		{
+			"ImportPath": "github.com/dgryski/go-onlinestats",
+			"Rev": "7b951fda1f2813f4b6d52eb6bcacc3089c36b205"
+		},
+		{
+			"ImportPath": "github.com/gogo/protobuf/proto",
+			"Comment": "v0.2-9-g4365f75",
+			"Rev": "4365f750fe246471f2a03ef5da5231c3565c5628"
+		},
+		{
+			"ImportPath": "github.com/golang/freetype",
+			"Comment": "release-128-gf9531a3",
+			"Rev": "f9531a36062a85d4cef2daae173a3c9a35ae9f17"
+		},
+		{
+			"ImportPath": "github.com/golang/freetype/raster",
+			"Comment": "release-128-gf9531a3",
+			"Rev": "f9531a36062a85d4cef2daae173a3c9a35ae9f17"
+		},
+		{
+			"ImportPath": "github.com/golang/freetype/truetype",
+			"Comment": "release-128-gf9531a3",
+			"Rev": "f9531a36062a85d4cef2daae173a3c9a35ae9f17"
+		},
+		{
+			"ImportPath": "github.com/gonum/floats",
+			"Rev": "2a71180e4ad56b4f59c6e7fa0b9d25555451050b"
+		},
+		{
+			"ImportPath": "github.com/gonum/internal/asm",
+			"Rev": "0d49b62ff2d34fb6d0a6933b0addf86b96167a25"
+		},
+		{
+			"ImportPath": "github.com/gonum/plot",
+			"Rev": "8730bf674945d8494ff75825a03adb63a5d856ac"
+		},
+		{
+			"ImportPath": "github.com/gonum/plot/palette",
+			"Rev": "8730bf674945d8494ff75825a03adb63a5d856ac"
+		},
+		{
+			"ImportPath": "github.com/gonum/plot/plotter",
+			"Rev": "8730bf674945d8494ff75825a03adb63a5d856ac"
+		},
+		{
+			"ImportPath": "github.com/gonum/plot/plotutil",
+			"Rev": "8730bf674945d8494ff75825a03adb63a5d856ac"
+		},
+		{
+			"ImportPath": "github.com/gonum/plot/vg",
+			"Rev": "8730bf674945d8494ff75825a03adb63a5d856ac"
+		},
+		{
+			"ImportPath": "github.com/gonum/plot/vg/draw",
+			"Rev": "8730bf674945d8494ff75825a03adb63a5d856ac"
+		},
+		{
+			"ImportPath": "github.com/gonum/plot/vg/fonts",
+			"Rev": "8730bf674945d8494ff75825a03adb63a5d856ac"
+		},
+		{
+			"ImportPath": "github.com/gonum/plot/vg/vgeps",
+			"Rev": "8730bf674945d8494ff75825a03adb63a5d856ac"
+		},
+		{
+			"ImportPath": "github.com/gonum/plot/vg/vgimg",
+			"Rev": "8730bf674945d8494ff75825a03adb63a5d856ac"
+		},
+		{
+			"ImportPath": "github.com/gonum/plot/vg/vgpdf",
+			"Rev": "8730bf674945d8494ff75825a03adb63a5d856ac"
+		},
+		{
+			"ImportPath": "github.com/gonum/plot/vg/vgsvg",
+			"Rev": "8730bf674945d8494ff75825a03adb63a5d856ac"
+		},
+		{
+			"ImportPath": "github.com/kisielk/og-rek",
+			"Rev": "28bae785206e71d70d9c770903d06abb87547734"
+		},
+		{
+			"ImportPath": "github.com/lestrrat/go-file-rotatelogs",
+			"Rev": "bb1d28fd5ac7ec9873540d5bba975d009f271f67"
+		},
+		{
+			"ImportPath": "github.com/llgcode/draw2d",
+			"Comment": "v1-69-g0545b30",
+			"Rev": "0545b30698e15720d228aa99e3b48151ee7e0943"
+		},
+		{
+			"ImportPath": "github.com/llgcode/draw2d/draw2dbase",
+			"Comment": "v1-69-g0545b30",
+			"Rev": "0545b30698e15720d228aa99e3b48151ee7e0943"
+		},
+		{
+			"ImportPath": "github.com/llgcode/draw2d/draw2dimg",
+			"Comment": "v1-69-g0545b30",
+			"Rev": "0545b30698e15720d228aa99e3b48151ee7e0943"
+		},
+		{
+			"ImportPath": "github.com/martine/gocairo/cairo",
+			"Rev": "ddd30f837497f6fcfe5e3c3665b97d7c17d381fe"
+		},
+		{
+			"ImportPath": "github.com/peterbourgon/g2g",
+			"Rev": "d7b3b6853c2a43202a2475b3bb23e886371fe1a4"
+		},
+		{
+			"ImportPath": "github.com/wangjohn/quickselect",
+			"Rev": "115d21d1a831a53413af863ce9c185d4ed67a8af"
+		},
+		{
+			"ImportPath": "golang.org/x/image/draw",
+			"Rev": "7a320489aeef7aeca3a8575763708a100a0d8dc9"
+		},
+		{
+			"ImportPath": "golang.org/x/image/font",
+			"Rev": "7a320489aeef7aeca3a8575763708a100a0d8dc9"
+		},
+		{
+			"ImportPath": "golang.org/x/image/math/f64",
+			"Rev": "7a320489aeef7aeca3a8575763708a100a0d8dc9"
+		},
+		{
+			"ImportPath": "golang.org/x/image/math/fixed",
+			"Rev": "7a320489aeef7aeca3a8575763708a100a0d8dc9"
+		},
+		{
+			"ImportPath": "golang.org/x/image/tiff",
+			"Rev": "7a320489aeef7aeca3a8575763708a100a0d8dc9"
+		},
+		{
+			"ImportPath": "golang.org/x/image/tiff/lzw",
+			"Rev": "7a320489aeef7aeca3a8575763708a100a0d8dc9"
+		}
+	]
+}
