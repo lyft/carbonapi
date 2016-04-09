@@ -158,7 +158,7 @@
 			"Rev": "0545b30698e15720d228aa99e3b48151ee7e0943"
 		},
 		{
-			"ImportPath": "github.com/martine/gocairo/cairo",
+			"ImportPath": "github.com/martine/gocairo",
 			"Rev": "ddd30f837497f6fcfe5e3c3665b97d7c17d381fe"
 		},
 		{
@@ -192,6 +192,10 @@
 		{
 			"ImportPath": "golang.org/x/image/tiff/lzw",
 			"Rev": "7a320489aeef7aeca3a8575763708a100a0d8dc9"
-		}
+		},
+		{
+			"ImportPath": "rsc.io/c2go/cc",
+			"Rev": "fc8cbfad5a47373828c81c7a56cccab8b221d310"
+                }
 	]
 }

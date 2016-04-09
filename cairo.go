@@ -16,7 +16,7 @@ import (
 
 	"bitbucket.org/tebeka/strftime"
 
-	cairo "github.com/martine/gocairo/cairo"
+	cairo "github.com/martine/gocairo"
 )
 
 type HAlign int
